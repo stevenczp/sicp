@@ -113,4 +113,28 @@
 ;如果写成两个式子的乘法，会导致系统对这两个式子递归的展开，相当于构建一颗深度为log2(n)的满二叉树，这会带来O(n)的开销
 
 ;1.27
-;(define (carmichael-test n))
+(define (carmichael-test n)
+  (carmichael-test-iter n 2))
+
+(define (carmichael-test-iter n k)
+  (define (try-it a)
+    (= (expmod a n n) a))
+  (if (= n k)
+      #t
+      (if (try-it k)
+          (carmichael-test-iter n (+ k 1))
+          false)))
+
+(carmichael-test 561)
+(carmichael-test 1105)
+(carmichael-test 1729)
+(carmichael-test 2465)
+(carmichael-test 2821)
+(carmichael-test 6601)
+
+;1.28
+; 还是不太理解Miller-Rabin算法
+(define (special-test n k)
+  (and (not (= k 1))
+       (not (= k (- n 1)))
+       (= 1 (remainder (square k) n))))
