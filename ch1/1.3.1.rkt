@@ -10,6 +10,25 @@
       (+ (term a)
          (sum term (next a) next b))))
 
+(define (smallest-divisor n)
+  (find-divisor n 2))
+
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (+ test-divisor 1)))))
+
+(define (divides? a b)
+  (= (remainder b a) 0))
+
+(define (prime? n)
+  (= n (smallest-divisor n)))
+
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
+
 ;1.29
 ;simpson与sum配合求积分
 (define (simpson-method f a b n)
@@ -92,3 +111,48 @@
   (define (next x)
     (+ x 1))
   (accumlate + 0 term a next b))
+
+(define (product term a next b)
+  (define (term x)
+    x)
+  (define (next x)
+    (+ x 1))
+  (accumlate * 1 term a next b))
+
+;b
+(define (accumlate combiner null-value term a next b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (combiner result (term a)))))
+  (iter a null-value))
+
+;1.33
+(define (filtered-accumulate combiner null-value term a next b filter)
+  (if (> a b)
+      null-value
+      (if (filter a)
+          (combiner (term a) (filtered-accumulate combiner null-value term (next a) next b filter))
+          (filtered-accumulate combiner null-value term (next a) next b filter))))
+
+;a 质数求和
+(define (prime-sum a b)
+  (define (term x)
+    x)
+  (define (next x)
+    (+ x 1))
+  (filtered-accumulate + 0 term a next b prime?))
+
+(prime-sum 2 100)
+
+;b 互质数求积
+(define (coprime-sum n)
+  (define (term x)
+    x)
+  (define (next x)
+    (+ x 1))
+  (define (coprime? a)
+    (= (gcd n a) 1))
+  (filtered-accumulate * 1 term 1 next n coprime?))
+
+(coprime-sum 10)
